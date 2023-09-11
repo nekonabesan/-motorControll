@@ -1,11 +1,11 @@
+import paramiko
 import api.models.connect_ev3_dev as connect
 
 class getMotersList():
      CMD = 'for f in /sys/class/tacho-motor/*; do echo $f; done'
-     def command(self):
+     def command(self, connection: connect.connectEv3Dev):
           motors = []
-          connector = connect.connectEv3Dev()
-          motors = connector.send(self.CMD)
+          motors = connection.sendForList(self.CMD)
           return motors
      
 
