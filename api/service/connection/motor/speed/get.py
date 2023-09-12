@@ -1,4 +1,4 @@
-import api.models.connect_ev3_dev as connect
+import api.service.connection.connect_ev3_dev as connect
 
 class Get():
     CMD = 'cat /sys/class/tacho-motor/'

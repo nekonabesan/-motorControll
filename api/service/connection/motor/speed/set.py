@@ -1,4 +1,4 @@
-import api.models.connect_ev3_dev as connect
+import api.service.connection.connect_ev3_dev as connect
 
 class Set():
     # echo run-direct > /sys/class/tacho-motor/motor0/command && echo 0 > /sys/class/tacho-motor/motor0/duty_cycle_sp && cat /sys/class/tacho-motor/motor0/duty_cycle_sp

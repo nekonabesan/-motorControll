@@ -60,6 +60,23 @@ class connectEv3Dev():
         tim = time_end- time_sta
         print(tim)
         return result
+    
+    def sendForSensorsList(self, command: str):    
+        time_sta = time.time()
+        results = []
+        # コマンドの実行
+        stdin, stdout, stderr = self.client.exec_command(command)
+        # コマンド実行結果を配列に格納
+        for line in stdout:
+            line = line.replace('\n', '')
+            #ディレクトリパス 「/sys/class/lego-sensor/」の最後の要素を戻り値に設定
+            list = line.split('/')
+            results.append(list.pop())
+        del stdin, stdout, stderr
+        time_end = time.time()
+        tim = time_end- time_sta
+        print(tim)
+        return results
 
     def __del__(self):
         del self.client
