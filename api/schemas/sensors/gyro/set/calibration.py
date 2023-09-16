@@ -1,6 +1,8 @@
 from pydantic import BaseModel, Field
 
-class calibration(BaseModel):
+class CalibrationBase(BaseModel):
     degrees_a: int = Field(None, example="")
     degrees_a: int = Field(None, example="")
-    done: bool = Field(False, description="完了フラグ")
+
+class Calibration(CalibrationBase):
+    done: bool = Field(True, description="完了フラグ")
