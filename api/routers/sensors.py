@@ -49,7 +49,7 @@ async def list_sensors(sensor_id: str):
         raise HTTPException(status_code=500, detail="Dose Not Connect ev3")
     return [type_sensors_schemas_api.Type(type=type.replace('\n', ''))]
 
-# ジャイロセンサーの初期設定
+# ジャイロセンサーのモード設定
 @router.get("/sensors/gyro/set/mode/{sensor_id}", response_model=List[modes_set_gyro_sensors_schimas.SetModes], status_code=201)
 async def gyro_set_mode(sensor_id: str):
     global connection
@@ -79,7 +79,7 @@ async def angle_get_gyro_sensors(sensor_id: str):
     angle = getAngle.command(connection, sensor_id)
     return[angle_get_gyro_sensors_schemas_api.Angle(angle=int(angle.replace('\n', '')))]
 
-# センサを校正
+# ジャイロセンサーセンサを校正
 @router.get("/sensors/gyro/set/calibration")
 async def calibration_set_gyro_sensors():
     pass

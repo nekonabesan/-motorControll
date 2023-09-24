@@ -6,5 +6,3 @@ class getMotersList():
           motors = []
           motors = connection.sendForSensorsList(self.CMD)
           return motors
-     
-

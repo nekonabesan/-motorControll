@@ -1,5 +1,7 @@
 from pydantic import BaseModel, Field
 
-class Speed(BaseModel):
+class SpeedBase(BaseModel):
     speed: int = Field(None, example=0)
-    done: bool = Field(False, description="完了フラグ")
+
+class Speed(SpeedBase):
+    done: bool = Field(True, description="完了フラグ")

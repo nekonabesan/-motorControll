@@ -3,16 +3,22 @@ from typing import List
 
 import api.schemas.motors.init as init_motors_schima
 import api.schemas.motors.list as list_motors_schemas
-import api.schemas.motors.speed.set as set_speed_motors_schemas
-import api.schemas.motors.speed.get as get_speed_motors_schemas
+import api.schemas.motors.pwm_value.set as set_pwm_value_motors_schemas
+import api.schemas.motors.pwm_value.pare as pare_pwm_value_motors_schemas
+import api.schemas.motors.pwm_value.get as get_pwm_value_motors_schemas
+import api.schemas.motors.dps.get as get_dps_mortors
+import api.schemas.motors.count_per_rot.get as get_cpr_motors_schimas
 import api.schemas.motors.angle.get as get_angle_motors_schima
 import api.schemas.motors.polarity.get as get_polarity_motors_schima
 import api.schemas.motors.polarity.set as set_polarity_motors_schima
 import api.service.connection.motor.init as init_mortor
 import api.service.connection.motor.list as list_motors
-import api.service.connection.motor.speed.get as get_speed
-import api.service.connection.motor.speed.set as set_speed
+import api.service.connection.motor.pwm_value.get as get_pwm_value
+import api.service.connection.motor.pwm_value.set as set_pwm_value
+import api.service.connection.motor.pwm_value.pare as pare_pwm_value
+import api.service.connection.motor.dps.get as get_dps_motor_connection
 import api.service.connection.motor.angle.get as get_angle
+import api.service.connection.motor.count_per_rot.get as get_cpr_motors_connection
 import api.service.connection.motor.polarity.get as get_polarity
 import api.service.connection.motor.polarity.set as set_polarity
 import api.service.connection.connect_ev3_dev as connect_ev3_dev
@@ -46,55 +52,66 @@ async def list_mortors():
     return [list_motors_schemas.List(motor_a=list[0], motor_b=list[1])]
 
 # モータに速度を指示するメソッド
-@router.get("/motors/speed/set/{motor_id}/{speed}", response_model=List[set_speed_motors_schemas.Set], status_code=201)
-async def set_speed_mortors(motor_id: str, speed: int):
+@router.get("/motors/pwm_value/set/{motor_id}/{pwm_value}", response_model=List[set_pwm_value_motors_schemas.Set], status_code=201)
+async def set_pwm_value_mortors(motor_id: str, pwm_value: str):
     global connection
     if connection is None:
         connection = connect_ev3_dev.connectEv3Dev()
-    set = set_speed.Set()
-    speed = set.command(connection, motor_id, speed)
+    set = set_pwm_value.Set()
+    pwm_value = set.command(connection, motor_id, pwm_value)
     if list is None:
         raise HTTPException(status_code=500, detail="Dose Not Connect ev3")
-    return [set_speed_motors_schemas.Set(speed=speed)]
+    return [set_pwm_value_motors_schemas.Set(pwm_value=pwm_value)]
 
-@router.post("/motors/speed/set/{motor_id}/{speed}", response_model=List[set_speed_motors_schemas.Set], status_code=201)
-async def set_speed_mortors(motor_id: str, speed: int):
+@router.post("/motors/pwm_value/set/{motor_id}/{pwm_value}", response_model=List[set_pwm_value_motors_schemas.Set], status_code=201)
+async def set_pwm_value_mortors(motor_id: str, pwm_value: str):
     global connection
     if connection is None:
         connection = connect_ev3_dev.connectEv3Dev()
-    set = set_speed.Set()
-    speed = set.command(connection, motor_id, speed)
+    set = set_pwm_value.Set()
+    pwm_value = set.command(connection, motor_id, pwm_value)
     if list is None:
         connection = connect_ev3_dev.connectEv3Dev()
         raise HTTPException(status_code=500, detail="Dose Not Connect ev3")
-    return [set_speed_motors_schemas.Set(speed=speed)]
+    return [set_pwm_value_motors_schemas.Set(pwm_value=pwm_value)]
 
-
-# モータの速度を返すメソッド
-@router.get("/motors/speed/get/{motor_id}", response_model=List[get_speed_motors_schemas.Get], status_code=201)
-async def get_speed_mortors(motor_id: str):
+#モータ２基に同時にデューティ比を設定するメソッド
+@router.get("/motors/pwm_value/set/pare/{motor_l_id}/{motor_r_id}/{pwm_value}", response_model=List[pare_pwm_value_motors_schemas.Pare], status_code=201)
+async def set_pwm_value_mortors(motor_l_id: str, motor_r_id: str, pwm_value: str):
     global connection
     if connection is None:
         connection = connect_ev3_dev.connectEv3Dev()
-    get = get_speed.Get()
-    speed = get.command(connection, motor_id)
-    if speed is None:
+    pare = pare_pwm_value.Pare()
+    pwm_value = pare.command(connection, motor_l_id, motor_r_id, pwm_value)
+    if list is None:
         raise HTTPException(status_code=500, detail="Dose Not Connect ev3")
-    return [get_speed_motors_schemas.Get(speed=speed)]
+    return [pare_pwm_value_motors_schemas.Pare(pwm_value=pwm_value)]
 
-@router.post("/motors/speed/get/{motor_id}", response_model=List[get_speed_motors_schemas.Get], status_code=201)
-async def get_speed_motors(motor_id: str):
+# モータの設定を返すメソッド
+@router.get("/motors/pwm_value/get/{motor_id}", response_model=List[get_pwm_value_motors_schemas.Get], status_code=201)
+async def get_pwm_value_mortors(motor_id: str):
     global connection
     if connection is None:
         connection = connect_ev3_dev.connectEv3Dev()
-    get = get_speed.Get()
-    speed = get.command(connection, motor_id)
-    if speed is None:
+    get = get_pwm_value.Get()
+    pwm_value = get.command(connection, motor_id)
+    if pwm_value is None:
         raise HTTPException(status_code=500, detail="Dose Not Connect ev3")
-    return [get_speed_motors_schemas.Get(speed=speed)]
+    return [get_pwm_value_motors_schemas.Get(pwm_value=pwm_value)]
+
+@router.post("/motors/pwm_value/get/{motor_id}", response_model=List[get_pwm_value_motors_schemas.Get], status_code=201)
+async def get_pwm_value_motors(motor_id: str):
+    global connection
+    if connection is None:
+        connection = connect_ev3_dev.connectEv3Dev()
+    get = get_pwm_value.Get()
+    pwm_value = get.command(connection, motor_id)
+    if pwm_value is None:
+        raise HTTPException(status_code=500, detail="Dose Not Connect ev3")
+    return [get_pwm_value_motors_schemas.Get(pwm_value=pwm_value)]
 
 # モータの角度を返すメソッド
-@router.get("/motors/angle/get/{motor_id}", response_model=List[get_angle_motors_schima.Get], status_code=201)
+@router.get("/motors/angle/get/{motor_id}/", response_model=List[get_angle_motors_schima.Get], status_code=201)
 async def get_angle_motors(motor_id: str):
     global connection
     if connection is None:
@@ -105,6 +122,32 @@ async def get_angle_motors(motor_id: str):
         connection = connect_ev3_dev.connectEv3Dev()
         raise HTTPException(status_code=500, detail="Dose Not Connect ev3")
     return[get_angle_motors_schima.Get(angle=int(angle))]
+
+# モータのcount_per_rotを返すメソッド
+@router.get("/motors/count_per_rot/get/{motor_id}", response_model=List[get_cpr_motors_schimas.Get], status_code=201)
+async def get_angle_motors(motor_id: str):
+    global connection
+    if connection is None:
+        connection = connect_ev3_dev.connectEv3Dev()
+    getCpr = get_cpr_motors_connection.Get()
+    cpr = getCpr.command(connection, motor_id)
+    if cpr is None:
+        connection = connect_ev3_dev.connectEv3Dev()
+        raise HTTPException(status_code=500, detail="Dose Not Connect ev3")
+    return[get_cpr_motors_schimas.Get(cpr=int(cpr))]
+
+# モータの角速度を返すメソッド
+@router.get("/motors/dps/get/{motor_a_id}/{motor_b_id}", response_model=List[get_dps_mortors.Get], status_code=201)
+async def get_angle_motors(motor_a_id: str, motor_b_id: str):
+    global connection
+    if connection is None:
+        connection = connect_ev3_dev.connectEv3Dev()
+    getDps = get_dps_motor_connection.Get()
+    (motor_a_dps, motor_b_dps) = getDps.command(connection, motor_a_id, motor_b_id)
+    if motor_a_dps is None or  motor_b_dps is None:
+        connection = connect_ev3_dev.connectEv3Dev()
+        raise HTTPException(status_code=500, detail="Dose Not Connect ev3")
+    return[get_dps_mortors.Get(motor_a_dps=int(motor_a_dps), motor_b_dps=int(motor_b_dps))]
 
 # モータの極性を返すメソッド
 @router.get("/motors/polarity/get/{motor_id}", response_model=List[get_polarity_motors_schima.Get], status_code=201)
