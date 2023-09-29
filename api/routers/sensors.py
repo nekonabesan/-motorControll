@@ -10,11 +10,13 @@ import api.schemas.sensors.gyro.get.angle as angle_get_gyro_sensors_schemas_api
 import api.schemas.sensors.gyro.get.speed as speed_get_gyro_sensors_schemas_api
 import api.schemas.sensors.gyro.get.rate as rate_get_gyro_sensors_schemas
 import api.schemas.sensors.gyro.set.calibration as calibration_set_yro_sensors_schemas
+import api.schemas.sensors.parameter.get as get_parameter_sensors_schima
 import api.service.connection.sensors.list as list_sensors_connection
 import api.service.connection.sensors.type as type_sensors_connection
 import api.service.connection.sensors.gyro.get.angle as angle_get_gyro_sensors_connection
 import api.service.connection.sensors.gyro.get.speed as speed_get_gyro_sensors_connection
 import api.service.connection.sensors.gyro.set.modes as modes_set_gyro_gyro_sensors_connection
+import api.service.connection.sensors.parameter.get as get_parameter_sensors_connection
 import api.service.connection.connect_ev3_dev as connect_ev3_dev
 
 router = APIRouter()
@@ -47,7 +49,7 @@ async def list_sensors(sensor_id: str):
     type = getSensorsType.command(connection, sensor_id)
     if list is None:
         raise HTTPException(status_code=500, detail="Dose Not Connect ev3")
-    return [type_sensors_schemas_api.Type(type=type.replace('\n', ''))]
+    return [type_sensors_schemas_api.Type(type=type)]
 
 # ジャイロセンサーのモード設定
 @router.get("/sensors/gyro/set/mode/{sensor_id}", response_model=List[modes_set_gyro_sensors_schimas.SetModes], status_code=201)
@@ -83,3 +85,21 @@ async def angle_get_gyro_sensors(sensor_id: str):
 @router.get("/sensors/gyro/set/calibration")
 async def calibration_set_gyro_sensors():
     pass
+
+# ジャイロセンサ指示角度,ジャイロセンサ角速度,モータ角速度,
+@router.get("/sensors/parameter/get/{sensor_id}/{motor_a_id}/{motor_b_id}", response_model=List[get_parameter_sensors_schima.Get], status_code=201)
+async def angle_get_gyro_sensors(sensor_id: str, motor_a_id: str, motor_b_id: str):
+    global connection
+    print(connection)
+    if connection is None:
+        connection = connect_ev3_dev.connectEv3Dev()
+    parameters = get_parameter_sensors_connection.Get()
+    (gyro_angle,gyro_dps,motor_a_dps,motor_b_dps,motor_a_position,motor_b_position) = parameters.command(connection, sensor_id, motor_a_id, motor_b_id)
+    return[get_parameter_sensors_schima.Get(
+        gyro_angle=gyro_angle
+        ,gyro_dps=gyro_dps
+        ,motor_a_dps=motor_a_dps
+        ,motor_b_dps=motor_b_dps
+        ,motor_a_position=motor_a_position
+        ,motor_b_position=motor_b_position
+    )]

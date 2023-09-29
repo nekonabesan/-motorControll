@@ -4,5 +4,5 @@ class getMotersList():
      CMD = 'for f in /sys/class/tacho-motor/*; do echo $f; done'
      def command(self, connection: connect.connectEv3Dev):
           motors = []
-          motors = connection.sendForSensorsList(self.CMD)
+          motors = connection.sendForList(self.CMD)
           return motors
