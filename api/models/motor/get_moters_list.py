@@ -1,4 +1,4 @@
-import api.service.connection.connect_ev3_dev as connect
+import api.service.connection.connect_motors as connect
 
 class getMotersList():
      CMD = 'for f in /sys/class/tacho-motor/*; do echo $f; done'

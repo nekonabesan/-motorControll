@@ -7,6 +7,8 @@ WORKDIR /src
 # pipを使ってpoetryをインストール
 RUN pip install poetry
 RUN pip install paramiko
+RUN pip install pyserial
+RUN pip install buildhat
 
 # poetryの定義ファイルをコピー (存在する場合)
 COPY pyproject.toml* poetry.lock* ./

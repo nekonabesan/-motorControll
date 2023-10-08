@@ -1,4 +1,4 @@
-import api.service.connection.connect_ev3_dev as connect
+import api.service.connection.connect_motors as connect
 
 class getAngle():
      def command(self, connection: connect.connectEv3Dev, sensor_id: str):

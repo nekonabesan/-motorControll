@@ -1,4 +1,4 @@
-import api.service.connection.connect_ev3_dev as connect
+import api.service.connection.connect_motors as connect
 
 class Get():
     #cat /sys/class/lego-sensor/sensor1/value0
